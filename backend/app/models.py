@@ -76,8 +76,24 @@ class TranscriptSegment(Base):
     end_time = Column(Float, nullable=False)
     text = Column(Text, nullable=False)
     order_index = Column(Integer, default=0)
+    is_highlighted = Column(Boolean, default=False)
 
     meeting = relationship("Meeting", back_populates="transcript_segments")
+    comments = relationship(
+        "Comment", back_populates="segment", cascade="all, delete-orphan",
+        order_by="Comment.created_at"
+    )
+
+
+class Comment(Base):
+    __tablename__ = "comments"
+    id = Column(Integer, primary_key=True, index=True)
+    segment_id = Column(Integer, ForeignKey("transcript_segments.id"), nullable=False)
+    text = Column(Text, nullable=False)
+    author_name = Column(String, default="Rachit Mittal")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    segment = relationship("TranscriptSegment", back_populates="comments")
 
 
 class Summary(Base):

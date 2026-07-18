@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import Base, engine
-from .routers import meetings, action_items
+from .routers import meetings, action_items, transcripts
 from .seed import seed_if_empty
 import os
 
@@ -22,6 +22,7 @@ app.add_middleware(
 
 app.include_router(meetings.router)
 app.include_router(action_items.router)
+app.include_router(transcripts.router)
 
 
 @app.get("/")

@@ -32,6 +32,17 @@ export const api = {
     return request(`/api/meetings?${qs.toString()}`);
   },
   listAllTopics: () => request(`/api/meetings/topics/all`),
+  toggleHighlight: (segmentId: number) =>
+    request(`/api/transcript-segments/${segmentId}/highlight`, { method: "PUT" }),
+  addComment: (segmentId: number, text: string) =>
+    request(`/api/transcript-segments/${segmentId}/comments`, {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    }),
+  deleteComment: (segmentId: number, commentId: number) =>
+    request(`/api/transcript-segments/${segmentId}/comments/${commentId}`, {
+      method: "DELETE",
+    }),
   getMeeting: (id: number) => request(`/api/meetings/${id}`),
   createMeeting: (data: any) =>
     request(`/api/meetings`, { method: "POST", body: JSON.stringify(data) }),

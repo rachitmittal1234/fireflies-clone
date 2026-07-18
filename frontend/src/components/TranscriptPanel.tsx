@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { TranscriptSegment } from "@/types";
+import { api } from "@/lib/api";
 
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -58,8 +59,44 @@ export default function TranscriptPanel({
   const [query, setQuery] = useState("");
   const speakerColors = buildSpeakerColorMap(segments);
   const activeRef = useRef<HTMLDivElement | null>(null);
+  const [localSegments, setLocalSegments] = useState<TranscriptSegment[]>(segments);
+  const [openCommentId, setOpenCommentId] = useState<number | null>(null);
+  const [commentDraft, setCommentDraft] = useState("");
 
-  const activeSegment = segments.find(
+  useEffect(() => {
+    setLocalSegments(segments);
+  }, [segments]);
+
+  async function handleToggleHighlight(segId: number, e: React.MouseEvent) {
+    e.stopPropagation();
+    const updated = (await api.toggleHighlight(segId)) as TranscriptSegment;
+    setLocalSegments((prev) => prev.map((s) => (s.id === segId ? updated : s)));
+  }
+
+  async function handleAddComment(segId: number, e: React.FormEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!commentDraft.trim()) return;
+    const comment = await api.addComment(segId, commentDraft);
+    setLocalSegments((prev) =>
+      prev.map((s) =>
+        s.id === segId ? { ...s, comments: [...s.comments, comment as any] } : s
+      )
+    );
+    setCommentDraft("");
+  }
+
+  async function handleDeleteComment(segId: number, commentId: number, e: React.MouseEvent) {
+    e.stopPropagation();
+    await api.deleteComment(segId, commentId);
+    setLocalSegments((prev) =>
+      prev.map((s) =>
+        s.id === segId ? { ...s, comments: s.comments.filter((c) => c.id !== commentId) } : s
+      )
+    );
+  }
+
+  const activeSegment = localSegments.find(
     (s) => currentTime >= s.start_time && currentTime < s.end_time
   );
 
@@ -68,8 +105,8 @@ export default function TranscriptPanel({
   }, [activeSegment?.id]);
 
   const filtered = query.trim()
-    ? segments.filter((s) => s.text.toLowerCase().includes(query.toLowerCase()))
-    : segments;
+    ? localSegments.filter((s) => s.text.toLowerCase().includes(query.toLowerCase()))
+    : localSegments;
 
   return (
     <div className="ff-card flex flex-col h-full">
@@ -95,7 +132,13 @@ export default function TranscriptPanel({
               key={seg.id}
               ref={isActive ? activeRef : null}
               onClick={() => onSeek(seg.start_time)}
-              style={isActive ? { backgroundColor: "var(--ff-highlight-bg)" } : undefined}
+              style={
+                isActive
+                  ? { backgroundColor: "var(--ff-highlight-bg)" }
+                  : seg.is_highlighted
+                  ? { backgroundColor: "rgba(250, 204, 21, 0.12)" }
+                  : undefined
+              }
               className={`flex gap-3 p-2 rounded-lg cursor-pointer transition ${
                 isActive ? "ring-1 ring-[var(--ff-purple-light)]" : "ff-hover"
               }`}
@@ -112,9 +155,76 @@ export default function TranscriptPanel({
                   {formatTime(seg.start_time)}
                 </div>
               </div>
-              <p className="text-sm text-[var(--ff-text)] leading-relaxed">
-                {highlightText(seg.text, query)}
-              </p>
+              <div className="flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm text-[var(--ff-text)] leading-relaxed">
+                    {highlightText(seg.text, query)}
+                  </p>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={(e) => handleToggleHighlight(seg.id, e)}
+                      title={seg.is_highlighted ? "Remove highlight" : "Highlight this line"}
+                      className={`text-sm ${
+                        seg.is_highlighted
+                          ? "text-amber-500"
+                          : "text-[var(--ff-text-muted)] hover:text-amber-500"
+                      } transition`}
+                    >
+                      {seg.is_highlighted ? "★" : "☆"}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenCommentId(openCommentId === seg.id ? null : seg.id);
+                      }}
+                      title="Comment on this line"
+                      className="text-xs text-[var(--ff-text-muted)] hover:text-[var(--ff-purple)] transition"
+                    >
+                      💬{(seg.comments?.length ?? 0) > 0 ? ` ${seg.comments!.length}` : ""}
+                    </button>
+                  </div>
+                </div>
+
+                {(seg.comments?.length ?? 0) > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {seg.comments!.map((c) => (
+                      <div
+                        key={c.id}
+                        className="flex items-center justify-between text-xs bg-black/5 rounded px-2 py-1"
+                      >
+                        <span>
+                          <span className="font-medium">{c.author_name}:</span> {c.text}
+                        </span>
+                        <button
+                          onClick={(e) => handleDeleteComment(seg.id, c.id, e)}
+                          className="text-red-400 hover:text-red-500 ml-2"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {openCommentId === seg.id && (
+                  <form
+                    onSubmit={(e) => handleAddComment(seg.id, e)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="mt-2 flex gap-2"
+                  >
+                    <input
+                      value={commentDraft}
+                      onChange={(e) => setCommentDraft(e.target.value)}
+                      placeholder="Add a comment..."
+                      autoFocus
+                      className="flex-1 text-xs border border-[var(--ff-border)] rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[var(--ff-purple-light)]"
+                    />
+                    <button type="submit" className="text-xs ff-btn-primary px-2 py-1">
+                      Post
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
           );
         })}

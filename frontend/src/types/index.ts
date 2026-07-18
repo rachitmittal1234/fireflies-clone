@@ -5,6 +5,14 @@ export interface Participant {
   avatar_url?: string | null;
 }
 
+export interface Comment {
+  id: number;
+  segment_id: number;
+  text: string;
+  author_name: string;
+  created_at: string;
+}
+
 export interface TranscriptSegment {
   id: number;
   meeting_id: number;
@@ -13,6 +21,8 @@ export interface TranscriptSegment {
   end_time: number;
   text: string;
   order_index: number;
+  is_highlighted: boolean;
+  comments: Comment[];
 }
 
 export interface Topic {

@@ -18,12 +18,29 @@ class ParticipantOut(ParticipantBase):
     id: int
 
 
+class CommentBase(BaseModel):
+    text: str
+    author_name: str = "Rachit Mittal"
+
+
+class CommentCreate(CommentBase):
+    pass
+
+
+class CommentOut(CommentBase):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    segment_id: int
+    created_at: datetime
+
+
 class TranscriptSegmentBase(BaseModel):
     speaker_name: str
     start_time: float
     end_time: float
     text: str
     order_index: int = 0
+    is_highlighted: bool = False
 
 
 class TranscriptSegmentCreate(TranscriptSegmentBase):
@@ -34,6 +51,7 @@ class TranscriptSegmentOut(TranscriptSegmentBase):
     model_config = ConfigDict(from_attributes=True)
     id: int
     meeting_id: int
+    comments: List[CommentOut] = []
 
 
 class TopicBase(BaseModel):
