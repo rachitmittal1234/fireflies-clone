@@ -23,17 +23,27 @@ function highlightText(text: string, query: string) {
   );
 }
 
-function speakerColor(name: string) {
-  const colors = [
-    "bg-purple-100 text-purple-700",
-    "bg-blue-100 text-blue-700",
-    "bg-green-100 text-green-700",
-    "bg-pink-100 text-pink-700",
-    "bg-amber-100 text-amber-700",
-  ];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) hash += name.charCodeAt(i);
-  return colors[hash % colors.length];
+const SPEAKER_COLORS = [
+  "bg-purple-100 text-purple-700",
+  "bg-blue-100 text-blue-700",
+  "bg-green-100 text-green-700",
+  "bg-pink-100 text-pink-700",
+  "bg-amber-100 text-amber-700",
+  "bg-teal-100 text-teal-700",
+  "bg-rose-100 text-rose-700",
+  "bg-indigo-100 text-indigo-700",
+];
+
+function buildSpeakerColorMap(segments: TranscriptSegment[]) {
+  const map: Record<string, string> = {};
+  let colorIndex = 0;
+  for (const seg of segments) {
+    if (!(seg.speaker_name in map)) {
+      map[seg.speaker_name] = SPEAKER_COLORS[colorIndex % SPEAKER_COLORS.length];
+      colorIndex++;
+    }
+  }
+  return map;
 }
 
 export default function TranscriptPanel({
@@ -46,6 +56,7 @@ export default function TranscriptPanel({
   onSeek: (time: number) => void;
 }) {
   const [query, setQuery] = useState("");
+  const speakerColors = buildSpeakerColorMap(segments);
   const activeRef = useRef<HTMLDivElement | null>(null);
 
   const activeSegment = segments.find(
@@ -90,9 +101,9 @@ export default function TranscriptPanel({
             >
               <div className="shrink-0 w-24">
                 <span
-                  className={`text-xs font-medium px-2 py-0.5 rounded-full ${speakerColor(
-                    seg.speaker_name
-                  )}`}
+                  className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                    speakerColors[seg.speaker_name]
+                  }`}
                 >
                   {seg.speaker_name}
                 </span>

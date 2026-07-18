@@ -87,10 +87,13 @@ def seed():
     ]
 
     for m in meetings_data:
+        last_segment_end = max((seg[2] for seg in m["segments"]), default=m["duration"])
+        actual_duration = int(last_segment_end) + 15  # small buffer after last line
+
         meeting = models.Meeting(
             title=m["title"],
             date=datetime.utcnow() - timedelta(days=m["days_ago"]),
-            duration_seconds=m["duration"],
+            duration_seconds=actual_duration,
             media_url=None,
             user_id=user.id,
         )

@@ -64,9 +64,12 @@ export default function MediaPlayer({
           </div>
         </div>
       </div>
-      <p className="text-xs text-[var(--ff-text-muted)] mt-2">
-        Placeholder player — real audio/video is out of scope per assignment spec.
-      </p>
+      <div className="flex items-center gap-1.5 mt-2">
+        <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+        <p className="text-xs text-[var(--ff-text-muted)]">
+          Simulated playback — no audio track (transcript sync demonstrated via timestamps, not real audio)
+        </p>
+      </div>
     </div>
   );
 }
