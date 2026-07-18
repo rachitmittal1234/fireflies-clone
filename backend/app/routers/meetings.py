@@ -163,6 +163,40 @@ def delete_meeting(meeting_id: int, db: Session = Depends(get_db)):
     return None
 
 
+@router.put("/{meeting_id}/participants/{participant_id}")
+def rename_participant(
+    meeting_id: int, participant_id: int, payload: schemas.ParticipantCreate, db: Session = Depends(get_db)
+):
+    """Renames a participant and cascades the change to transcript speaker labels
+    and action item assignees within this meeting, so everything stays consistent."""
+    meeting = get_meeting_or_404(db, meeting_id)
+
+    participant = db.query(models.Participant).filter(models.Participant.id == participant_id).first()
+    if not participant or participant not in meeting.participants:
+        raise HTTPException(status_code=404, detail="Participant not found on this meeting")
+
+    old_name = participant.name
+    new_name = payload.name
+
+    if old_name != new_name:
+        db.query(models.TranscriptSegment).filter(
+            models.TranscriptSegment.meeting_id == meeting_id,
+            models.TranscriptSegment.speaker_name == old_name,
+        ).update({"speaker_name": new_name})
+
+        db.query(models.ActionItem).filter(
+            models.ActionItem.meeting_id == meeting_id,
+            models.ActionItem.assignee_name == old_name,
+        ).update({"assignee_name": new_name})
+
+    participant.name = new_name
+    if payload.email:
+        participant.email = payload.email
+
+    db.commit()
+    return get_meeting_or_404(db, meeting_id)
+
+
 @router.get("/{meeting_id}/transcript/search")
 def search_transcript(meeting_id: int, q: str = Query(...), db: Session = Depends(get_db)):
     get_meeting_or_404(db, meeting_id)

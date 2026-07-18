@@ -23,6 +23,8 @@ export default function SummaryTabs({
 }) {
   const [tab, setTab] = useState<Tab>("summary");
   const [newItemText, setNewItemText] = useState("");
+  const [editingItemId, setEditingItemId] = useState<number | null>(null);
+  const [editDraft, setEditDraft] = useState("");
 
   async function toggleComplete(item: ActionItem) {
     const updated = (await api.updateActionItem(meetingId, item.id, {
@@ -31,6 +33,17 @@ export default function SummaryTabs({
     onActionItemsChange(
       actionItems.map((i) => (i.id === item.id ? updated : i))
     );
+  }
+
+  async function saveEdit(item: ActionItem) {
+    if (!editDraft.trim()) return;
+    const updated = (await api.updateActionItem(meetingId, item.id, {
+      text: editDraft,
+    })) as ActionItem;
+    onActionItemsChange(
+      actionItems.map((i) => (i.id === item.id ? updated : i))
+    );
+    setEditingItemId(null);
   }
 
   async function deleteItem(item: ActionItem) {
@@ -89,27 +102,65 @@ export default function SummaryTabs({
                   className="mt-1 accent-[var(--ff-purple)]"
                 />
                 <div className="flex-1">
-                  <p
-                    className={`text-sm ${
-                      item.is_completed
-                        ? "line-through text-[var(--ff-text-muted)]"
-                        : "text-[var(--ff-text)]"
-                    }`}
-                  >
-                    {item.text}
-                  </p>
-                  {item.assignee_name && (
-                    <span className="text-xs text-[var(--ff-text-muted)]">
-                      Assigned to {item.assignee_name}
-                    </span>
+                  {editingItemId === item.id ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        value={editDraft}
+                        onChange={(e) => setEditDraft(e.target.value)}
+                        className="flex-1 text-sm border border-[var(--ff-border)] rounded px-2 py-1"
+                        autoFocus
+                      />
+                      <button
+                        onClick={() => saveEdit(item)}
+                        className="text-xs ff-btn-primary px-2 py-1"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setEditingItemId(null)}
+                        className="text-xs px-2 py-1 border border-[var(--ff-border)] rounded"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <p
+                        className={`text-sm ${
+                          item.is_completed
+                            ? "line-through text-[var(--ff-text-muted)]"
+                            : "text-[var(--ff-text)]"
+                        }`}
+                      >
+                        {item.text}
+                      </p>
+                      {item.assignee_name && (
+                        <span className="text-xs text-[var(--ff-text-muted)]">
+                          Assigned to {item.assignee_name}
+                        </span>
+                      )}
+                    </>
                   )}
                 </div>
-                <button
-                  onClick={() => deleteItem(item)}
-                  className="opacity-0 group-hover:opacity-100 text-xs text-red-500 transition"
-                >
-                  Delete
-                </button>
+                {editingItemId !== item.id && (
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setEditingItemId(item.id);
+                        setEditDraft(item.text);
+                      }}
+                      className="text-xs text-[var(--ff-purple)] border border-[var(--ff-purple-light)] rounded px-2 py-0.5 hover:bg-purple-50 transition"
+                    >
+                      ✎ Edit
+                    </button>
+                    <button
+                      onClick={() => deleteItem(item)}
+                      className="text-xs text-red-500 border border-red-200 rounded px-2 py-0.5 hover:bg-red-50 transition"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
             {actionItems.length === 0 && (

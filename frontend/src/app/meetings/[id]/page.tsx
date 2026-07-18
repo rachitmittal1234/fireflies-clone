@@ -25,6 +25,8 @@ export default function MeetingDetailPage({
   const [isPlaying, setIsPlaying] = useState(false);
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState("");
+  const [editingParticipants, setEditingParticipants] = useState(false);
+  const [participantDrafts, setParticipantDrafts] = useState<{ id: number; name: string }[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -33,6 +35,7 @@ export default function MeetingDetailPage({
         const data = (await api.getMeeting(Number(id))) as MeetingDetail;
         setMeeting(data);
         setTitleDraft(data.title);
+        setParticipantDrafts(data.participants.map((p) => ({ id: p.id, name: p.name })));
       } catch (err) {
         console.error(err);
       } finally {
@@ -49,6 +52,20 @@ export default function MeetingDetailPage({
     setMeeting({ ...meeting, title: updated.title });
     setEditingTitle(false);
     showToast("Title updated");
+  }
+
+  async function handleParticipantsSave() {
+    if (!meeting) return;
+    let latest: MeetingDetail = meeting;
+    for (const draft of participantDrafts) {
+      const original = meeting.participants.find((p) => p.id === draft.id);
+      if (original && original.name !== draft.name && draft.name.trim()) {
+        latest = (await api.renameParticipant(meeting.id, draft.id, draft.name.trim())) as MeetingDetail;
+      }
+    }
+    setMeeting(latest);
+    setEditingParticipants(false);
+    showToast("Participants updated — transcript and action items synced");
   }
 
   async function handleDelete() {
@@ -110,10 +127,24 @@ export default function MeetingDetailPage({
               {meeting.title}
             </h1>
           )}
-          <p className="text-sm text-[var(--ff-text-muted)] mt-1">
-            {new Date(meeting.date).toLocaleString()} ·{" "}
-            {meeting.participants.map((p) => p.name).join(", ")}
-          </p>
+          <div className="flex items-center gap-1 mt-1">
+            <p className="text-sm text-[var(--ff-text-muted)]">
+              {new Date(meeting.date).toLocaleString()} ·{" "}
+            </p>
+            {!editingParticipants && (
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-[var(--ff-text-muted)]">
+                  {meeting.participants.map((p) => p.name).join(", ") || "No participants"}
+                </p>
+                <button
+                  onClick={() => setEditingParticipants(true)}
+                  className="text-xs text-[var(--ff-purple)] border border-[var(--ff-purple-light)] rounded px-2 py-0.5 hover:bg-purple-50 transition"
+                >
+                  ✎ Edit Participants
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -143,6 +174,41 @@ export default function MeetingDetailPage({
           </button>
         </div>
       </div>
+
+      {editingParticipants && (
+        <div className="ff-card p-4 mb-6">
+          <h3 className="text-sm font-semibold mb-3">Edit Participants</h3>
+          <p className="text-xs text-[var(--ff-text-muted)] mb-3">
+            Renaming a participant here automatically updates their name in the transcript and any assigned action items.
+          </p>
+          <div className="space-y-2 mb-4">
+            {participantDrafts.map((p, idx) => (
+              <div key={p.id} className="flex items-center gap-2">
+                <input
+                  value={p.name}
+                  onChange={(e) => {
+                    const next = [...participantDrafts];
+                    next[idx] = { ...next[idx], name: e.target.value };
+                    setParticipantDrafts(next);
+                  }}
+                  className="flex-1 text-sm border border-[var(--ff-border)] rounded-lg px-3 py-1.5"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setEditingParticipants(false)}
+              className="px-3 py-1.5 text-sm border border-[var(--ff-border)] rounded-lg"
+            >
+              Cancel
+            </button>
+            <button onClick={handleParticipantsSave} className="ff-btn-primary px-4 py-1.5 text-sm">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="mb-6">
         <MediaPlayer

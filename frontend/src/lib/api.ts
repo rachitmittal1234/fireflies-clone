@@ -40,6 +40,11 @@ export const api = {
     request(`/api/meetings/${id}/transcript/search?q=${encodeURIComponent(q)}`),
   globalSearch: (q: string) =>
     request(`/api/meetings/search/global?q=${encodeURIComponent(q)}`),
+  renameParticipant: (meetingId: number, participantId: number, name: string) =>
+    request(`/api/meetings/${meetingId}/participants/${participantId}`, {
+      method: "PUT",
+      body: JSON.stringify({ name }),
+    }),
   createActionItem: (meetingId: number, data: any) =>
     request(`/api/meetings/${meetingId}/action-items`, {
       method: "POST",
