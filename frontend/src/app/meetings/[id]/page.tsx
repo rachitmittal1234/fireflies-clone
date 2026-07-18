@@ -169,6 +169,15 @@ export default function MeetingDetailPage({
             Export .txt
           </button>
           <button
+            onClick={() => {
+              exportMeetingAsPDF(meeting);
+              showToast("Exported as PDF");
+            }}
+            className="text-sm border border-[var(--ff-border)] rounded-lg px-3 py-1.5 ff-hover transition"
+          >
+            Export .pdf
+          </button>
+          <button
             onClick={handleDelete}
             className="text-sm text-red-500 border border-red-200 rounded-lg px-3 py-1.5 hover:bg-red-50 transition"
           >
