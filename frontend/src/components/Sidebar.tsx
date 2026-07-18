@@ -43,7 +43,7 @@ export default function Sidebar({ collapsed }: { collapsed: boolean }) {
                 key={item.label}
                 href={item.href}
                 title={item.label}
-                className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg transition ${
+                className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg transition outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ff-purple-light)] ${
                   active ? "bg-purple-50 text-[var(--ff-purple)]" : ""
                 }`}
                 onMouseEnter={(e) => {
@@ -86,7 +86,7 @@ export default function Sidebar({ collapsed }: { collapsed: boolean }) {
             <Link
               key={item.label}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ff-purple-light)] ${
                 active
                   ? "bg-purple-50 text-[var(--ff-purple)] font-medium"
                   : "text-[var(--ff-text-muted)] hover:text-[var(--ff-text)]"
