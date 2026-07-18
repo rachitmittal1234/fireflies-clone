@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  --ff-purple: #5b21b6;
+  --ff-purple-light: #7c3aed;
+  --ff-bg: #f8f7fb;
+  --ff-sidebar: #1e1b2e;
+  --ff-border: #e5e3ec;
+  --ff-text: #1f1b2e;
+  --ff-text-muted: #6b7280;
+}
+
+body {
+  background-color: var(--ff-bg);
+  color: var(--ff-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d0dd;
+  border-radius: 8px;
+}
+
+.ff-card {
+  background: white;
+  border: 1px solid var(--ff-border);
+  border-radius: 12px;
+}
+
+.ff-btn-primary {
+  background: var(--ff-purple);
+  color: white;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+.ff-btn-primary:hover {
+  background: var(--ff-purple-light);
+}
+
+.dark {
+  --ff-bg: #14121f;
+  --ff-sidebar: #0e0c17;
+  --ff-border: #2a2740;
+  --ff-text: #f1f0f7;
+  --ff-text-muted: #9b96b3;
+}
+
+.dark .ff-card {
+  background: #1c1930;
+  border-color: var(--ff-border);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
