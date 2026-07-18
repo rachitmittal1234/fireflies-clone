@@ -6,7 +6,7 @@ import ThemeToggle from "@/components/ThemeToggle";
 
 const navItems = [
   { label: "Home", href: "/", icon: "🏠" },
-  { label: "Meetings", href: "/", icon: "📼" },
+  { label: "Meetings", href: "/meetings", icon: "📼" },
   { label: "AI Apps", href: "/coming-soon", icon: "✨" },
   { label: "Integrations", href: "/coming-soon", icon: "🔗" },
   { label: "Team", href: "/coming-soon", icon: "👥" },
@@ -28,7 +28,8 @@ export default function Sidebar() {
 
       <nav className="flex-1 px-3 py-4 space-y-1">
         {navItems.map((item) => {
-          const active = item.href === "/" && pathname === "/";
+          const active =
+            item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           return (
             <Link
               key={item.label}

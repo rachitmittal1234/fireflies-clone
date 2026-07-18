@@ -14,11 +14,19 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  listMeetings: (params?: { search?: string; participant?: string; sort?: string }) => {
+  listMeetings: (params?: {
+    search?: string;
+    participant?: string;
+    sort?: string;
+    dateFrom?: string;
+    dateTo?: string;
+  }) => {
     const qs = new URLSearchParams();
     if (params?.search) qs.set("search", params.search);
     if (params?.participant) qs.set("participant", params.participant);
     if (params?.sort) qs.set("sort", params.sort);
+    if (params?.dateFrom) qs.set("date_from", params.dateFrom);
+    if (params?.dateTo) qs.set("date_to", params.dateTo);
     return request(`/api/meetings?${qs.toString()}`);
   },
   getMeeting: (id: number) => request(`/api/meetings/${id}`),
