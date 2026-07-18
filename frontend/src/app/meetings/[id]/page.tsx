@@ -8,7 +8,7 @@ import MediaPlayer from "@/components/MediaPlayer";
 import TranscriptPanel from "@/components/TranscriptPanel";
 import SummaryTabs from "@/components/SummaryTabs";
 import { useToast } from "@/components/Toast";
-import { exportMeetingAsMarkdown, exportMeetingAsText } from "@/lib/export";
+import { exportMeetingAsMarkdown, exportMeetingAsText, exportMeetingAsPDF } from "@/lib/export";
 
 export default function MeetingDetailPage({
   params,

@@ -17,6 +17,7 @@ export const api = {
   listMeetings: (params?: {
     search?: string;
     participant?: string;
+    topic?: string;
     sort?: string;
     dateFrom?: string;
     dateTo?: string;
@@ -24,11 +25,13 @@ export const api = {
     const qs = new URLSearchParams();
     if (params?.search) qs.set("search", params.search);
     if (params?.participant) qs.set("participant", params.participant);
+    if (params?.topic) qs.set("topic", params.topic);
     if (params?.sort) qs.set("sort", params.sort);
     if (params?.dateFrom) qs.set("date_from", params.dateFrom);
     if (params?.dateTo) qs.set("date_to", params.dateTo);
     return request(`/api/meetings?${qs.toString()}`);
   },
+  listAllTopics: () => request(`/api/meetings/topics/all`),
   getMeeting: (id: number) => request(`/api/meetings/${id}`),
   createMeeting: (data: any) =>
     request(`/api/meetings`, { method: "POST", body: JSON.stringify(data) }),

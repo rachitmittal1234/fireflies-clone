@@ -7,6 +7,7 @@ import { MeetingListItem } from "@/types";
 import MeetingCard from "@/components/MeetingCard";
 import NewMeetingModal from "@/components/NewMeetingModal";
 import FilterBar, { Filters } from "@/components/FilterBar";
+import TagFilter from "@/components/TagFilter";
 
 function MeetingsLibraryInner() {
   const searchParams = useSearchParams();
@@ -16,6 +17,7 @@ function MeetingsLibraryInner() {
   const [sort, setSort] = useState("recent");
   const [modalOpen, setModalOpen] = useState(false);
   const [filters, setFilters] = useState<Filters>({ participant: "", dateFrom: "", dateTo: "" });
+  const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
 
   const fetchMeetings = useCallback(async () => {
     setLoading(true);
@@ -26,6 +28,7 @@ function MeetingsLibraryInner() {
         participant: filters.participant || undefined,
         dateFrom: filters.dateFrom || undefined,
         dateTo: filters.dateTo || undefined,
+        topic: selectedTopic || undefined,
       });
       setMeetings(data as MeetingListItem[]);
     } catch (err) {
@@ -33,7 +36,7 @@ function MeetingsLibraryInner() {
     } finally {
       setLoading(false);
     }
-  }, [search, sort, filters]);
+  }, [search, sort, filters, selectedTopic]);
 
   useEffect(() => {
     fetchMeetings();
@@ -50,6 +53,8 @@ function MeetingsLibraryInner() {
             </p>
           </div>
         </div>
+
+        <TagFilter selected={selectedTopic} onSelect={setSelectedTopic} />
 
         <div className="mb-6">
           <input

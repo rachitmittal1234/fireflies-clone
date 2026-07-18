@@ -32,6 +32,7 @@ def get_meeting_or_404(db: Session, meeting_id: int):
 def list_meetings(
     search: Optional[str] = Query(None),
     participant: Optional[str] = Query(None),
+    topic: Optional[str] = Query(None),
     date_from: Optional[datetime] = Query(None),
     date_to: Optional[datetime] = Query(None),
     sort: str = Query("recent"),  # recent | oldest
@@ -47,6 +48,11 @@ def list_meetings(
             models.Participant.name.ilike(f"%{participant}%")
         )
 
+    if topic:
+        query = query.join(models.Meeting.topics).filter(
+            models.Topic.title.ilike(f"%{topic}%")
+        )
+
     if date_from:
         query = query.filter(models.Meeting.date >= date_from)
     if date_to:
@@ -58,6 +64,13 @@ def list_meetings(
         query = query.order_by(models.Meeting.date.desc())
 
     return query.all()
+
+
+@router.get("/topics/all")
+def list_all_topics(db: Session = Depends(get_db)):
+    """Returns distinct topic titles across all meetings, for building a tag filter UI."""
+    rows = db.query(models.Topic.title).distinct().all()
+    return sorted({r[0] for r in rows})
 
 
 @router.get("/{meeting_id}", response_model=schemas.MeetingDetailOut)
