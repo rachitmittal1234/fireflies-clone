@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Sidebar from "@/components/Sidebar";
+import AppShell from "@/components/AppShell";
 import { ToastProvider } from "@/components/Toast";
 
 export const metadata: Metadata = {
@@ -15,10 +15,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <ToastProvider>
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="flex-1 min-w-0">{children}</main>
-          </div>
+          <AppShell>{children}</AppShell>
         </ToastProvider>
       </body>
     </html>

@@ -119,13 +119,15 @@ export default function MeetingDetailPage({
               </button>
             </div>
           ) : (
-            <h1
-              onClick={() => setEditingTitle(true)}
-              className="text-xl font-semibold cursor-pointer hover:text-[var(--ff-purple)] transition"
-              title="Click to edit"
-            >
-              {meeting.title}
-            </h1>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-semibold">{meeting.title}</h1>
+              <button
+                onClick={() => setEditingTitle(true)}
+                className="text-xs text-[var(--ff-purple)] border border-[var(--ff-purple-light)] rounded px-2 py-0.5 hover:bg-purple-50 transition"
+              >
+                ✎ Edit Title
+              </button>
+            </div>
           )}
           <div className="flex items-center gap-1 mt-1">
             <p className="text-sm text-[var(--ff-text-muted)]">
