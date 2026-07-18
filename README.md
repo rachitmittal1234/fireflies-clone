@@ -81,3 +81,9 @@ App available at `http://localhost:3000`.
 ## Known Limitations
 - SQLite file is local; on some free-tier hosts the filesystem is ephemeral (data resets on redeploy) — see deployment notes below.
 - No real-time collaboration or live meeting bot (explicitly out of scope per assignment).
+
+## Live Demo
+- **Frontend:** https://fireflies-clone-ruby.vercel.app
+- **Backend API:** https://fireflies-clone-backend-62hd.onrender.com
+
+Note: the backend free-tier instance spins down after 15 minutes of inactivity. The first request after idle time may take 30-50 seconds to respond while it wakes up.
