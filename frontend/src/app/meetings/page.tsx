@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { api } from "@/lib/api";
 import { MeetingListItem } from "@/types";
@@ -8,7 +8,7 @@ import MeetingCard from "@/components/MeetingCard";
 import NewMeetingModal from "@/components/NewMeetingModal";
 import FilterBar, { Filters } from "@/components/FilterBar";
 
-export default function MeetingsLibrary() {
+function MeetingsLibraryInner() {
   const searchParams = useSearchParams();
   const [meetings, setMeetings] = useState<MeetingListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,5 +102,13 @@ export default function MeetingsLibrary() {
 
       <NewMeetingModal open={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
+  );
+}
+
+export default function MeetingsLibrary() {
+  return (
+    <Suspense fallback={<div className="p-6 text-sm text-[var(--ff-text-muted)]">Loading...</div>}>
+      <MeetingsLibraryInner />
+    </Suspense>
   );
 }
