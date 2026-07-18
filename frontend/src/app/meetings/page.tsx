@@ -67,7 +67,8 @@ function MeetingsLibraryInner() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="border border-[var(--ff-border)] rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[var(--ff-purple-light)]"
+              style={{ backgroundColor: "var(--ff-surface-bg)", color: "var(--ff-text)" }}
+              className="border border-[var(--ff-border)] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--ff-purple-light)]"
             >
               <option value="recent">Most Recent</option>
               <option value="oldest">Oldest</option>

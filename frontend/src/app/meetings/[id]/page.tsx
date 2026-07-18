@@ -155,7 +155,7 @@ export default function MeetingDetailPage({
               exportMeetingAsMarkdown(meeting);
               showToast("Exported as Markdown");
             }}
-            className="text-sm border border-[var(--ff-border)] rounded-lg px-3 py-1.5 hover:bg-gray-50 transition"
+            className="text-sm border border-[var(--ff-border)] rounded-lg px-3 py-1.5 ff-hover transition"
           >
             Export .md
           </button>
@@ -164,7 +164,7 @@ export default function MeetingDetailPage({
               exportMeetingAsText(meeting);
               showToast("Exported as TXT");
             }}
-            className="text-sm border border-[var(--ff-border)] rounded-lg px-3 py-1.5 hover:bg-gray-50 transition"
+            className="text-sm border border-[var(--ff-border)] rounded-lg px-3 py-1.5 ff-hover transition"
           >
             Export .txt
           </button>

@@ -187,7 +187,7 @@ export default function SummaryTabs({
               <div
                 key={topic.id}
                 onClick={() => onSeek(topic.start_time)}
-                className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 cursor-pointer"
+                className="flex items-center justify-between p-2 rounded-lg ff-hover cursor-pointer"
               >
                 <span className="text-sm">{topic.title}</span>
                 <span className="text-xs text-[var(--ff-text-muted)]">

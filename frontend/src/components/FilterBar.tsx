@@ -53,7 +53,7 @@ export default function FilterBar({
         className={`flex items-center gap-2 px-3.5 py-2 text-sm rounded-lg border transition ${
           hasActiveFilters
             ? "border-[var(--ff-purple)] text-[var(--ff-purple)] bg-purple-50"
-            : "border-[var(--ff-border)] text-[var(--ff-text)] hover:bg-gray-50"
+            : "border-[var(--ff-border)] text-[var(--ff-text)] ff-hover"
         }`}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -131,7 +131,7 @@ export default function FilterBar({
           <div className="flex justify-end gap-2 pt-3 border-t border-[var(--ff-border)]">
             <button
               onClick={() => setOpen(false)}
-              className="px-3.5 py-1.5 text-sm rounded-lg border border-[var(--ff-border)] hover:bg-gray-50 transition"
+              className="px-3.5 py-1.5 text-sm rounded-lg border border-[var(--ff-border)] ff-hover transition"
             >
               Cancel
             </button>

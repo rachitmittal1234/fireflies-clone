@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Sidebar from "@/components/Sidebar";
 import TopHeader from "@/components/TopHeader";
 
@@ -9,7 +9,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen relative">
-      <Sidebar collapsed={collapsed} />
+      <Suspense fallback={<div className="w-60 shrink-0 h-screen bg-white border-r border-[var(--ff-border)]" />}>
+        <Sidebar collapsed={collapsed} />
+      </Suspense>
 
       <button
         onClick={() => setCollapsed((c) => !c)}

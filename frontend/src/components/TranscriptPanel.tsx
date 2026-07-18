@@ -95,8 +95,9 @@ export default function TranscriptPanel({
               key={seg.id}
               ref={isActive ? activeRef : null}
               onClick={() => onSeek(seg.start_time)}
+              style={isActive ? { backgroundColor: "var(--ff-highlight-bg)" } : undefined}
               className={`flex gap-3 p-2 rounded-lg cursor-pointer transition ${
-                isActive ? "bg-purple-50 ring-1 ring-[var(--ff-purple-light)]" : "hover:bg-gray-50"
+                isActive ? "ring-1 ring-[var(--ff-purple-light)]" : "ff-hover"
               }`}
             >
               <div className="shrink-0 w-24">
