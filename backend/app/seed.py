@@ -133,3 +133,13 @@ def seed():
 
 if __name__ == "__main__":
     seed()
+
+
+def seed_if_empty():
+    """Seeds the DB only if no meetings exist yet — safe to call on every startup."""
+    Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    count = db.query(models.Meeting).count()
+    db.close()
+    if count == 0:
+        seed()
